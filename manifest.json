@@ -1,9 +1,9 @@
 {
   "id": "omarchy-writing",
-  "name": "Mounty Zen",
-  "version": "0.4.1",
+  "name": "Mounty-tool",
+  "version": "0.5.0",
   "minAppVersion": "1.5.0",
-  "description": "Focus on writing with optional Zen, typewriter scrolling, and Markdown width controls. Works offline without network, shell commands, telemetry, or dependency installers.",
+  "description": "Organize one note at a time with graph categories and preview native Graph colours. Keep optional Zen, typewriter and writing controls.",
   "author": "Le Son",
   "isDesktopOnly": false
 }
