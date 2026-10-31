@@ -293,3 +293,57 @@ body[data-ow-palette="sonwork"] .markdown-source-view.mod-cm6 :is(.cm-link, .cm-
 /* CM flattens either combined nesting order into one token. Rendered HTML
    keeps nesting; the innermost role wins there. Keep native weight/style. */
 body[data-ow-palette="sonwork"] .markdown-source-view.mod-cm6 .cm-em.cm-strong { color: var(--italic-color); }
+
+/* Mounty-tool Graph previews only; preceding 0.4.1 CSS is retained verbatim. */
+.mounty-tool-rule { display: flex; align-items: center; gap: 0.75em; margin-block: 0.5em; overflow-wrap: anywhere; }
+.mounty-tool-swatch { width: 1em; height: 1em; flex: 0 0 1em; border: 1px solid var(--background-modifier-border); border-radius: 50%; }
+
+/* Category editor only: native Settings fields flow vertically and wrap within
+   their own card; never hide page overflow or shrink text to fit controls. */
+.mounty-tool-category-editor {
+  min-width: 0;
+  max-width: 100%;
+  box-sizing: border-box;
+  margin-block: var(--size-4-4);
+  padding: var(--size-4-3);
+  border: 1px solid var(--background-modifier-border);
+  border-radius: var(--radius-m);
+  overflow-wrap: anywhere;
+}
+.mounty-tool-category-editor .mounty-tool-category-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: var(--size-4-2);
+  min-width: 0;
+}
+.mounty-tool-category-editor .mounty-tool-category-row .setting-item-info {
+  flex: 1 1 12rem;
+  min-width: 0;
+  margin-inline-end: 0;
+}
+.mounty-tool-category-editor .mounty-tool-category-row .setting-item-control {
+  display: flex;
+  flex: 1 1 14rem;
+  flex-wrap: wrap;
+  gap: var(--size-4-2);
+  min-width: 0;
+  max-width: 100%;
+}
+.mounty-tool-category-editor .mounty-tool-category-row input[type="text"] {
+  flex: 1 1 10rem;
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+.mounty-tool-category-editor .mounty-tool-category-row input[type="color"] {
+  flex: 0 0 auto;
+  max-width: 100%;
+}
+.mounty-tool-category-editor .mounty-tool-category-actions button {
+  max-width: 100%;
+  height: auto;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}

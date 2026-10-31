@@ -1,56 +1,149 @@
-# Mounty Zen
+# Mounty-tool 0.5.0
 
-Optional writing behaviour for [Mounty](https://github.com/sonlndv/Mounty) and its supported Omarchy alias: Zen commands, typewriter cursor centering and saved writing preferences.
+Optional tools for connected notes: **manual graph categories and colours**, plus
+retained Zen/writing controls. Mounty and Omarchy remain standalone CSS themes
+with the same appearance at matching releases. The tool can also colour native
+Graph groups without replacing your theme. No automatic classification or bulk
+note edits are included.
 
-## One principle: behaviour, not a second theme
+This product's current source is https://github.com/sonlndv/Mounty-tool .
+Versioned runtime files are available from the [0.5.0 release](https://github.com/sonlndv/Mounty-tool/releases/tag/0.5.0) when published. Official plugin-directory
+submission remains maintainer-owned and pending; a release/source file is not activation.
+The repository was renamed in place; its history and older releases remain.
 
-**Mounty provides the appearance. Mounty Zen adds functionality a CSS theme alone cannot provide.** Mounty must remain useful without this plugin, and neither theme installs it automatically.
+## One property, one category
 
-Zen owns commands/toggles, conditional presentation, preference persistence and editor-cursor behaviour. Static width/title styling can be expressed in CSS; the interactive controls and saved choices for it belong here. Supporting plugin CSS serves those behaviours rather than replacing Mounty's palette or typography.
+In Settings → Mounty-tool → **Graph categories**, add a meaningful stable key,
+a label, and six-digit dark/light hex colours. `note` starts cyan; `restaurant`
+is an editable mint example, not an automatic classification. There is no hard
+category-count limit. Keep colour meanings deliberate rather than inventing a
+rainbow for each folder. Keys are trimmed, 1–64 characters, unique ignoring case,
+and exclude quotes/control characters. Labels are 1–80 characters; invalid input
+gets a visible notice instead of being silently saved. Existing keys are immutable
+in the editor; editing a label or colour does not change any note values.
 
-## Writing tools
+Example property (you assign it deliberately to one note):
 
-![The retained synthetic native writing-tools menu.](docs/images/mounty-writing-tools.png)
+```yaml
+mounty-graph: restaurant
+```
 
-![Synthetic writing content with the visible Exit Zen control.](docs/images/mounty-zen.png)
+Run **Mounty-tool: Assign or clear graph category for current note**, or use the
+pen-ribbon tools menu. The modal pins the exact Markdown path and existing value.
+Choose one category, then explicitly Assign, or explicitly Clear mounty-graph.
+Cancel is the default and writes nothing. The public `processFrontMatter` API
+changes/deletes only this property, preserving body and unrelated properties;
+Obsidian may normalize frontmatter formatting. Full-file byte equality is not
+promised for an explicit assignment. Changed/missing/renamed/replaced files,
+malformed YAML, ambiguous list/object/nonstring values and unknown choices are
+refused with a notice. Fix malformed values yourself; the tool will not convert
+a list or guess a category. There are no startup/file-open writes or content scans.
 
-Use the pen ribbon or **Mounty Zen: Open writing tools**. The menu provides Zen, optional typewriter editing, Outline and Backlinks. No pane opens automatically; unavailable core commands stay disabled. Enable Obsidian's own Outline/Backlinks core plugins yourself if wanted.
+Removing a category edits **only plugin preferences**. Existing note properties
+stay unmatched until you deliberately change or clear them. Labels/colours and
+category deletion never edit notes or native Graph automatically.
 
-- **Zen starts OFF**, with a visible Exit Zen button. It does not save a new layout or hijack Escape from native menus, dialogs, IME or Vim.
-- **Typewriter starts OFF.** When selected, it centers a focused, unselected cursor during Zen source editing after input/keyboard movement, not on an idle loop. Selection, composition, menus and manual scrolling have guards.
-- **Saved preferences:** Markdown width starts standard; hiding the filename title starts OFF. Native text size and non-Markdown views remain separate.
-- **Follow Omarchy colours starts OFF.** For recognized Mounty/Omarchy CSS it protects the fixed palette. ON permits the next normal desktop Omarchy application through a separately reviewed hook; it does not run shell, install a hook, switch OS theme or guarantee phone sync.
+## Preview, then Apply to native GLOBAL Graph
 
-The captures show real retained synthetic Obsidian desktop behaviour. They do not claim fresh native/mobile tests of this repository publication.
+Open native Graph explicitly. Run **Preview applying graph category colours**
+from commands, settings or the pen menu. The preview shows current dark/light
+scheme, exact escaped queries/swatches and how many old groups will be retained.
+Cancel remains default. **Apply category colours** prepends category rules,
+so they take priority over overlapping existing rules, preserving all other
+groups in their existing order and retaining search/filter/forces/zoom/layout.
+A restaurant overlapping an old active-work group gets restaurant's one colour.
+Whole-value property matching keeps `note` distinct from `notebook`.
 
-## Install Mounty Zen 0.4.1
+Changing colours/categories or switching scheme saves only preferences: **preview
+and Apply again** to update Graph. Native custom group colours do not remap
+implicitly on theme/CSS changes. Repeated applies replace exact unedited owned
+snapshots without duplication. Foreign exact-query conflicts are refused; resolve
+those in native Graph before a fresh preview. A prefix is not ownership.
 
-Source: https://github.com/sonlndv/Mounty-Zen . Release files: https://github.com/sonlndv/Mounty-Zen/releases/tag/0.4.1 .
+**Preview removing unedited tool-owned graph rules** is explicit undo. It removes
+only exact, unique, unchanged persisted tool-owned rule snapshots. Foreign or
+edited rules and all non-group options remain. Ownership survives reload/disable.
+Ambiguous duplicated exact snapshots are refused rather than guessed. Category
+or group/scheme/target changes since preview require a fresh preview. Own saves
+and Graph actions are serialized. Failed operations never report success and
+restore their changed groups only when the live state still exactly matches
+that operation's output; newer user state is left untouched. Inspect Graph and
+saved ownership after an error, especially if storage/core persistence failed.
 
-The community plugin submission is **planned, not submitted or approved**. Manual installation is available; community installation/update is conditional on actual directory publication.
+### Compatibility boundary
 
-Put `main.js`, `styles.css` and `manifest.json` directly under `<vault>/.obsidian/plugins/omarchy-writing/`, then explicitly enable **Mounty Zen** in Community plugins. For an existing Omarchy Writing/Mounty Writing companion, disable it first, replace those three runtime files in the SAME folder, **preserve `data.json`**, and re-enable it.
+This uses **non-public, narrowly validated** global Graph `dataEngine` interop,
+feasibility-probed in Obsidian **1.14.5**: `getOptions`, partial
+`setOptions({colorGroups})`, `onOptionsChange`, and optional debounce flush.
+Generic leaf setState is not used; direct graph.json writes are not used.
+Unsupported/missing/detached/local Graph shapes fail closed with an explicit
+Open global Graph affordance if its core command exists. The tool never enables
+a core plugin. Live group state is verified; native core disk persistence can
+finish asynchronously and is not a transactional graph-file guarantee.
+Note assignment, cancellation/clear, malformed/list property refusal, managed rule apply/removal and dark/light node colours have been exercised in an isolated synthetic Obsidian1.14.5 desktop vault. Physical mobile/IME, detached editors and remote sync are not certified.
 
-The display name is **Mounty Zen**; the technical ID/folder intentionally remains **omarchy-writing** to preserve preferences and hotkeys. The GitHub repository name does not require an ID change. Do not create a second `mounty-zen` plugin, enable both names, or edit a manifest to fake registration. See the [migration guide](docs/MIGRATING-TO-MOUNTY.md).
+## Retained writing tools
 
-Assignable command IDs remain:
+![Retained synthetic writing menu, before the new graph entries.](docs/images/mounty-writing-tools.png)
 
-- `omarchy-writing:open-writing-tools`
+![Retained synthetic Zen capture with visible Exit Zen.](docs/images/mounty-zen.png)
+
+These older writing captures are not proof of the new Graph UI or category
+implementation. Zen always starts OFF, with visible Exit Zen and command exit.
+Typewriter and Follow Omarchy colours remain OFF by default; width is standard,
+hide filename title OFF. Existing saved values are retained. Native text sizing,
+IME/selection/manual-scroll/menu/modal guards, no Escape hijack, main-document
+menu ownership and unload cleanup remain. No default hotkeys or automatic panes.
+Follow-colours still needs the separately reviewed desktop hook; this plugin
+never executes shell or switches OS theme and cannot promise phone sync.
+
+Settings separate **Writing** and **Graph categories**. Stable technical identity
+and existing hotkeys/preferences remain in `omarchy-writing`. Commands:
+
+- `omarchy-writing:open-writing-tools` (pen ribbon; now includes Graph actions)
 - `omarchy-writing:toggle-zen`
 - `omarchy-writing:toggle-typewriter`
+- `omarchy-writing:assign-graph-category`
+- `omarchy-writing:preview-graph-categories`
+- `omarchy-writing:preview-remove-graph-categories`
 
-No default hotkeys are assigned. A file download or release upload is not activation; explicitly enable and verify the plugin in the intended vault.
+## Manual install / upgrade
 
-## Privacy, limits and removal
+After review/publication, copy release **main.js, styles.css, manifest.json** to
+`<vault>/.obsidian/plugins/omarchy-writing/`. Disable the old manual companion
+before replacing files in that SAME folder, **preserve data.json**, then explicitly
+re-enable Mounty-tool. Never create a second Mounty-tool/mounty-zen ID or enable
+two copies. Theme updates do not install tools. Verify ID/version before any future
+official directory install; none is claimed available here. See
+[migration](docs/MIGRATING-TO-MOUNTY.md) and [listing status](docs/COMMUNITY-LISTINGS.md).
 
-The runtime works offline without an account, network, telemetry, shell execution, external libraries or a dependency installer. Obsidian provides its SDK. It stores only its own explicit preference changes; note content, Graph Groups, other plugin settings, hotkeys and layout are not rewritten. Unload removes owned presentation/listeners/menu/button/padding and restores owned body state.
+## Privacy, source, tests and rollback
 
-Behaviour targets the main window. Retained native QA used Obsidian 1.14.5; `minAppVersion: 1.5.0` is inherited metadata, not newly certified. Physical phone/IME/mobile keyboard, detached editors and remote sync remain unverified.
+Offline runtime: no account, network, telemetry, shell, dependencies/build step,
+self-updater or dependency installer. Obsidian provides the SDK. The ONLY deliberate
+note mutation is the selected note's mounty-graph frontmatter via the public API;
+the ONLY deliberate Graph mutation is partial native colour groups after preview.
+Own category/ownership/writing preferences are stored with saveData. There are
+no vault-content scans, bulk tags, taxonomy migrations or other-plugin writes.
 
-Disable before removing/restoring the owned runtime; retain `data.json` if returning. Restore only your backed-up files, never notes/Groups/layout or other settings. Older hook/plugin combinations may not enforce opt-in; review them before allowing desktop writes.
+```sh
+node --check main.js
+node --test tests/*.cjs
+```
 
-## Source and licence
+CI uses Node22 without installing packages. SDK-free tests are not native UI
+proof. Inherited minimum metadata remains 1.5.0, not freshly tested across old
+versions. Graph interop targets main-window 1.14.5 shapes; physical phone, detached
+windows, mobile IME and sync are not certified. The old generator/0.4.1 companion
+in obsidian-omarchy-theme is preserved history, not the future plugin source or
+byte-parity authority for this functional release. Generated 0.4.1 palette CSS
+remains an exact prefix; no fonts/theme palettes/images/licenses are recoloured.
 
-`main.js` is directly loadable, unobfuscated CommonJS source with `styles.css`; no transpiler/build or dependency installation is required. Runtime bytes match the reviewed companion in the [original maintained source](https://github.com/sonlndv/obsidian-omarchy-theme).
+Before rollback, explicitly preview/remove unedited owned rules if desired;
+disabling alone does not delete saved note categories or Graph groups. Disable,
+restore owned backed-up runtime in the same folder and retain data.json. Older
+versions ignore new Graph fields and cannot manage these rules; native Graph
+can be edited manually. Never erase notes, Groups, layout or other preferences.
+Manual installation into your chosen vault is a separate deliberate action. No directory approval or live-vault activation is implied by source publication.
 
-Original author: Le Son. [MIT LICENSE](LICENSE). Release tag **0.4.1** matches the root plugin manifest; its raw assets are `main.js`, `manifest.json` and `styles.css`. Owner Obsidian/GitHub account linking is needed for submission, not for plugin use. See [listing copy and submission steps](docs/COMMUNITY-LISTINGS.md); GitHub publication is not official approval.
+Original author Le Son; [MIT LICENSE](LICENSE). Existing images/attribution remain.
