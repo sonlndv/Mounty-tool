@@ -14,7 +14,7 @@ The repository was renamed in place; its history and older releases remain.
 ## One property, one category
 
 In Settings → Mounty-tool → **Graph categories**, add a meaningful stable key,
-a label, and six-digit dark/light hex colours. `note` starts cyan; `restaurant`
+a label, and paired dark/light colours using native colour pickers or six-digit hex fields. `note` starts cyan; `restaurant`
 is an editable mint example, not an automatic classification. There is no hard
 category-count limit. Keep colour meanings deliberate rather than inventing a
 rainbow for each folder. Keys are trimmed, 1–64 characters, unique ignoring case,
@@ -69,6 +69,16 @@ and Graph actions are serialized. Failed operations never report success and
 restore their changed groups only when the live state still exactly matches
 that operation's output; newer user state is left untouched. Inspect Graph and
 saved ownership after an error, especially if storage/core persistence failed.
+
+Incoming external settings notifications are read immediately, including while an
+own save is pending. Captured incoming values take priority: a conflicting own
+edit is rejected with a notice, and its completed stale save is repaired from the
+captured input. A newer notification supersedes an older capture. Failed reads or
+restoration block further own writes until storage is repaired and a fresh valid
+refresh arrives; the tool never substitutes defaults for failed incoming data.
+This is bounded notification-based recovery, not cross-process atomic locking or
+a remote-sync guarantee: a value already lost before its notification/read cannot
+be recovered by this plugin. Reopen an edit or preview after a conflict.
 
 ### Compatibility boundary
 

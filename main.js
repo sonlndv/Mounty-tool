@@ -148,7 +148,9 @@ class OmarchyWriting extends Plugin {
   async onload() {
     this.queue = Promise.resolve();
     this.dialogs = new Set();
-    this.settings = normalize(await this.loadData());
+    const initial = await this.loadData();
+    this.settings = normalize(initial);
+    this.settingsRaw = copy(initial && typeof initial === 'object' && !Array.isArray(initial) ? initial : {});
     this.zen = false; this.frame = null; this.cleanups = []; this.composing = false;
     this.body = document.body;
     this.previous = new Map(['data-ow-width', 'data-ow-hide-title', 'data-ow-zen', 'data-ow-palette'].map(k => [k, this.body.getAttribute(k)]));
@@ -218,7 +220,7 @@ class OmarchyWriting extends Plugin {
       .addButton(b=>b.setButtonText('Preview remove owned rules').onClick(()=>this.openGraphPreview('remove')));
   }
   editCategory(draft, oldKey, expected, remove) {
-    return this.run(async()=>{
+    return this.run(async(revision)=>{
       const current=categories(this.settings.graphCategories);
       if (!same(current,expected)) throw new Error('Categories changed. Reopen settings before editing.');
       const candidate=oldKey ? current.filter(c=>c.key!==oldKey) : [...current];
@@ -227,7 +229,7 @@ class OmarchyWriting extends Plugin {
         if (oldKey) candidate.splice(current.findIndex(c=>c.key===oldKey),0,clean); else candidate.push(clean);
       }
       const next=normalize({...this.settings,graphCategories:categories(candidate)});
-      await this.saveData(next);this.settings=next;
+      await this.saveSettings(next,revision);this.settings=next;
     });
   }
   captureNote(file=this.app.workspace.getActiveFile()) {
@@ -305,10 +307,11 @@ class OmarchyWriting extends Plugin {
     if (typeof engine.onOptionsChange.run==='function') await engine.onOptionsChange.run();
   }
   applyGraphPreview(p) {
-    return this.run(async()=>{
+    return this.run(async(revision)=>{
       const ctx=this.validatePreview(p);
       const before=copy(this.settings), next=normalize({...before,graphOwnership:p.plan.owned});
       const expected={...p.options,colorGroups:p.plan.groups};
+      const attemptedSettings=this.settingsPayload(next);
       let touched=false, saveAttempted=false;
       try {
         touched=true;
@@ -316,7 +319,7 @@ class OmarchyWriting extends Plugin {
         await this.notifyGraph(ctx.engine);
         if (this.unloaded) throw new Error('Tool unloaded during Graph operation.');
         if (!same(this.graphContext(p.leaf).options,expected)) throw new Error('Native Graph did not confirm the intended groups/options.');
-        saveAttempted=true;await this.saveData(next);
+        saveAttempted=true;await this.saveSettings(next,revision);
         this.settings=next;
         if (this.unloaded) throw new Error('Tool unloaded during persistence.');
         if (!same(this.graphContext(p.leaf).options,expected)) throw new Error('Graph changed during persistence. No success confirmed; preview again.');
@@ -332,10 +335,10 @@ class OmarchyWriting extends Plugin {
             graphRestored=same(this.graphContext(p.leaf).options,p.options);
           } else graphRestored=same(live.options,p.options);
         } catch (_rollbackError) { /* Do not overwrite newer or detached state. */ }
-        if (saveAttempted && graphRestored) {
+        if (saveAttempted && graphRestored && this.externalRevision===revision && !this.pendingExternalRecovery) {
           try {
             const persisted=await this.loadData();
-            if (same(persisted,next)) { await this.saveData(before); this.settings=before; }
+            if (same(persisted,attemptedSettings)) { await this.saveSettings(before,revision); this.settings=before; }
           } catch (_saveError) { /* Explain uncertain persistence, never claim success. */ }
         }
         this.currentGraphPreview=null;
@@ -384,15 +387,22 @@ class OmarchyWriting extends Plugin {
       getComputedStyle(el).visibility !== 'hidden');
   }
   change(key, value) {
-    return this.run(async () => {
+    return this.run(async (revision) => {
       const next = normalize({ ...this.settings, [key]: value });
-      await this.saveData(next);
+      await this.saveSettings(next,revision);
       this.settings = next;
       if (!this.unloaded) { this.applySettings(); this.syncEditor(); }
     });
   }
   run(task) {
-    const result = this.queue.then(() => { if (this.unloaded) throw new Error('Tool is unloaded. Re-enable it first.'); return task(); });
+    this.ensurePersistence();
+    const result = this.queue.then(async () => {
+      if (this.unloaded) throw new Error('Tool is unloaded. Re-enable it first.');
+      let revision;
+      do { revision=await this.acceptExternal(); } while (revision!==this.externalRevision);
+      if (this.unloaded) throw new Error('Tool unloaded while loading settings.');
+      return task(revision);
+    });
     this.queue = result.catch(error => { this.notice(error.message || 'Operation failed. No success confirmed.'); });
     return this.queue.then(() => result);
   }
@@ -417,12 +427,86 @@ class OmarchyWriting extends Plugin {
     else this.body.setAttribute('data-ow-palette', wanted);
     this.notifyCSS();
   }
+  ensurePersistence() {
+    if (this.externalRevision === undefined) this.externalRevision=0;
+    if (!this.settingsRaw) this.settingsRaw=copy(this.settings || {});
+  }
+  settingsPayload(next) { return {...copy(this.settingsRaw),...copy(next)}; }
+  adoptIncoming(capture) {
+    this.settingsRaw=copy(capture.raw);
+    this.settings=normalize(capture.raw);
+    this.acceptedExternalRevision=capture.revision;
+    if (!this.unloaded) { this.applySettings(); this.syncEditor(); this.warnGraphSettings(); }
+  }
+  async latestIncoming() {
+    for (;;) {
+      const capture=this.externalCapture;
+      if (!capture) return null;
+      await capture.ready;
+      if (capture!==this.externalCapture) continue;
+      if (capture.error) throw new Error('Cannot capture incoming settings: '+capture.error.message+'. Own writes are blocked; resolve storage and deliver a fresh settings refresh.');
+      return capture;
+    }
+  }
+  async acceptExternal() {
+    if (this.pendingExternalRecovery) await this.recoverIncoming();
+    for (;;) {
+      const capture=await this.latestIncoming();
+      if (capture!==this.externalCapture && this.externalCapture) continue;
+      if (capture && capture.revision!==this.acceptedExternalRevision) this.adoptIncoming(capture);
+      return capture ? capture.revision : this.externalRevision;
+    }
+  }
+  async recoverIncoming() {
+    // The stale physical save has finished. Restore captured input, never defaults.
+    // If a newer notification arrives during restoration, restore that one next.
+    for (;;) {
+      const capture=await this.latestIncoming();
+      if (capture!==this.externalCapture) continue;
+      if (!capture) throw new Error('Incoming settings recovery has no captured snapshot. Own writes remain blocked.');
+      try { await this.saveData(copy(capture.raw)); }
+      catch(error) {
+        if (capture!==this.externalCapture) continue;
+        throw new Error('Incoming settings restoration failed: '+error.message+'. Own writes remain blocked; preserve settings and retry refresh after storage is repaired.');
+      }
+      if (capture!==this.externalCapture) continue;
+      this.pendingExternalRecovery=false;
+      this.adoptIncoming(capture);
+      return;
+    }
+  }
+  async saveSettings(next,revision) {
+    this.ensurePersistence();
+    if (revision!==this.externalRevision) {
+      await this.acceptExternal();
+      throw new Error('External settings changed. Own operation rejected; create a fresh edit/preview.');
+    }
+    const payload=this.settingsPayload(next);
+    let failure;
+    try { await this.saveData(payload); } catch(error) { failure=error; }
+    if (revision!==this.externalRevision) {
+      this.pendingExternalRecovery=true;
+      await this.recoverIncoming();
+      throw new Error('External settings arrived during save. Incoming values restored; own operation rejected. Create a fresh edit/preview.');
+    }
+    if (failure) throw failure;
+    this.settingsRaw=copy(payload);
+    if (this.unloaded) throw new Error('Tool unloaded during save. No presentation reapplied; inspect saved settings before retrying.');
+  }
   onExternalSettingsChange() {
-    return this.run(async () => {
-      const settings = normalize(await this.loadData());
-      if (this.unloaded) return;
-      this.settings = settings; this.applySettings(); this.syncEditor(); this.warnGraphSettings();
-    });
+    this.ensurePersistence();
+    const capture={revision:++this.externalRevision};
+    this.externalCapture=capture;
+    this.currentGraphPreview=null;
+    // Begin the physical read NOW, not when the own-action queue reaches reload.
+    let read;
+    try { read=this.loadData(); } catch(error) { read=Promise.reject(error); }
+    capture.ready=Promise.resolve(read).then(raw=>{
+      if (!raw || typeof raw!=='object' || Array.isArray(raw)) throw new Error('Incoming settings must be an object; no reset performed');
+      capture.raw=copy(raw);
+    }).catch(error=>{capture.error=error;});
+    // Reads are immediate; adoption/recovery is serialized with ALL own saves.
+    return this.run(async()=>{});
   }
   activeView() { return this.app.workspace.getActiveViewOfType(MarkdownView); }
   cancel() {
