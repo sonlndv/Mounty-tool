@@ -1,0 +1,295 @@
+/* Hide navigation only, never plugin toolbars, Markdown content or modals. */
+body[data-ow-zen="true"] .workspace > .workspace-ribbon,
+body[data-ow-zen="true"] .workspace > .workspace-split.mod-left-split,
+body[data-ow-zen="true"] .workspace > .workspace-split.mod-right-split,
+body[data-ow-zen="true"] .workspace-split.mod-root > .workspace-tabs > .workspace-tab-header-container,
+body[data-ow-zen="true"] > .app-container > .status-bar {
+  display: none;
+}
+.ow-exit-zen {
+  position: fixed;
+  top: max(8px, env(safe-area-inset-top, 0px));
+  right: max(12px, env(safe-area-inset-right, 0px));
+  z-index: 30;
+  min-height: 44px;
+  padding: 0.5em 1em;
+  color: var(--text-normal);
+  background: var(--background-secondary);
+  border: 1px solid var(--background-modifier-border);
+}
+.ow-exit-zen:focus-visible { outline: 2px solid var(--interactive-accent); }
+body[data-ow-width="narrow"] .workspace-leaf-content[data-type="markdown"] { --file-line-width: 56ch; }
+body[data-ow-width="standard"] .workspace-leaf-content[data-type="markdown"] { --file-line-width: 68ch; }
+body[data-ow-width="wide"] .workspace-leaf-content[data-type="markdown"] { --file-line-width: 82ch; }
+body[data-ow-hide-title="true"] .workspace-leaf-content[data-type="markdown"] .inline-title { display: none; }
+body[data-ow-zen="true"] .ow-typewriter .markdown-source-view.mod-cm6 .cm-content { padding-bottom: 50vh; }
+
+
+/* Fixed palette protection: generated from bin/build.py default semantic blocks. */
+
+body.theme-dark[data-ow-palette="sonwork"] {
+  --background-primary: #02050d;
+  --background-primary-alt: #050b16;
+  --background-secondary: #050b16;
+  --background-secondary-alt: #0c1621;
+  --ribbon-background: #050b16;
+  --ribbon-background-collapsed: #050b16;
+  --titlebar-background: #050b16;
+  --titlebar-background-focused: #050b16;
+  --background-modifier-hover: #0c1621;
+  --background-modifier-border: #2b2e32;
+  --background-modifier-border-hover: #8a939e;
+  --background-modifier-border-focus: #39d0fc;
+  --text-normal: #f0f4f7;
+  --text-muted: #abb2ba;
+  --text-faint: #8a939e;
+  --text-accent: #39d0fc;
+  --text-accent-hover: #39d0fc;
+  --interactive-normal: #050b16;
+  --interactive-hover: #0c1621;
+  --interactive-accent: #39d0fc;
+  --interactive-accent-hover: #39d0fc;
+  --color-accent: #39d0fc;
+  --color-accent-1: #39d0fc;
+  --color-accent-2: #39d0fc;
+  --inline-title-color: #f0f4f7;
+  --text-on-accent: #02050d;
+  --text-on-accent-inverted: #02050d;
+  --link-color: #39d0fc;
+  --link-color-hover: #39d0fc;
+  --link-external-color: #39d0fc;
+  --link-external-color-hover: #39d0fc;
+  --text-warning: #f5b488;
+  --callout-warning: #f5b488;
+  --text-error: #f5b488;
+  --callout-error: #f5b488;
+  --callout-default: #39d0fc;
+  --callout-info: #39d0fc;
+  --callout-note: #39d0fc;
+  --bold-color: #f5a67d;
+  --italic-color: #c4b5fd;
+  --code-background: #0c1621;
+  --code-normal: #f0f4f7;
+  --code-comment: #8a939e;
+  --code-string: #abb2ba;
+  --code-keyword: #f0f4f7;
+  --code-function: #f0f4f7;
+  --code-property: #abb2ba;
+  --code-operator: #abb2ba;
+  --code-punctuation: #abb2ba;
+  --code-tag: #f0f4f7;
+  --code-value: #abb2ba;
+  --code-important: #f0f4f7;
+  --table-header-background: #0c1621;
+  --table-border-color: #2b2e32;
+  --hr-color: #2b2e32;
+  --blockquote-border-color: #2b2e32;
+  --nav-item-color: #abb2ba;
+  --nav-item-color-hover: #f0f4f7;
+  --nav-item-color-active: #f0f4f7;
+  --nav-item-background-active: #0c1621;
+  --nav-item-background-hover: #0c1621;
+  --tab-text-color: #abb2ba;
+  --tab-text-color-active: #f0f4f7;
+  --tag-color: #39d0fc;
+  --caret-color: #39d0fc;
+  --checkbox-color: #39d0fc;
+  --checkbox-color-hover: #39d0fc;
+  --checkbox-marker-color: #02050d;
+  --h1-color: #f0f4f7;
+  --h2-color: #82defa;
+  --h3-color: #82defa;
+  --h4-color: #f0f4f7;
+  --h5-color: #f0f4f7;
+  --h6-color: #f0f4f7;
+  --inline-code-color: #f5a67d;
+  --underline-color: #83d5b4;
+  --strikethrough-color: #8a939e;
+  --graph-node: #39d0fc;
+  --graph-node-focused: #f5a67d;
+  --graph-node-tag: #83d5b4;
+  --graph-node-attachment: #c4b5fd;
+  --graph-node-unresolved: #c7bca4;
+  --graph-line: #3c5c70;
+  --graph-text: #abb2ba;
+  --interactive-accent-rgb: 57, 208, 252;
+  --text-selection: rgba(57, 208, 252, 0.18);
+  --text-highlight-bg: rgba(57, 208, 252, 0.14);
+  --background-modifier-active-hover: rgba(57, 208, 252, 0.12);
+  --tag-background: rgba(57, 208, 252, 0.08);
+}
+
+body.theme-light[data-ow-palette="sonwork"] {
+  --background-primary: #f8fafd;
+  --background-primary-alt: #eef3f8;
+  --background-secondary: #eef3f8;
+  --background-secondary-alt: #e4eaf1;
+  --ribbon-background: #eef3f8;
+  --ribbon-background-collapsed: #eef3f8;
+  --titlebar-background: #eef3f8;
+  --titlebar-background-focused: #eef3f8;
+  --background-modifier-hover: #e4eaf1;
+  --background-modifier-border: #b6bfc8;
+  --background-modifier-border-hover: #515c68;
+  --background-modifier-border-focus: #006cac;
+  --text-normal: #0b1421;
+  --text-muted: #333e4c;
+  --text-faint: #515c68;
+  --text-accent: #006cac;
+  --text-accent-hover: #006cac;
+  --interactive-normal: #eef3f8;
+  --interactive-hover: #e4eaf1;
+  --interactive-accent: #006cac;
+  --interactive-accent-hover: #006cac;
+  --color-accent: #006cac;
+  --color-accent-1: #006cac;
+  --color-accent-2: #006cac;
+  --inline-title-color: #0b1421;
+  --text-on-accent: #f8fafd;
+  --text-on-accent-inverted: #f8fafd;
+  --link-color: #006cac;
+  --link-color-hover: #006cac;
+  --link-external-color: #006cac;
+  --link-external-color-hover: #006cac;
+  --text-warning: #9c470d;
+  --callout-warning: #9c470d;
+  --text-error: #9c470d;
+  --callout-error: #9c470d;
+  --callout-default: #006cac;
+  --callout-info: #006cac;
+  --callout-note: #006cac;
+  --bold-color: #96502a;
+  --italic-color: #6c4b99;
+  --code-background: #e4eaf1;
+  --code-normal: #0b1421;
+  --code-comment: #515c68;
+  --code-string: #333e4c;
+  --code-keyword: #0b1421;
+  --code-function: #0b1421;
+  --code-property: #333e4c;
+  --code-operator: #333e4c;
+  --code-punctuation: #333e4c;
+  --code-tag: #0b1421;
+  --code-value: #333e4c;
+  --code-important: #0b1421;
+  --table-header-background: #e4eaf1;
+  --table-border-color: #b6bfc8;
+  --hr-color: #b6bfc8;
+  --blockquote-border-color: #b6bfc8;
+  --nav-item-color: #333e4c;
+  --nav-item-color-hover: #0b1421;
+  --nav-item-color-active: #0b1421;
+  --nav-item-background-active: #e4eaf1;
+  --nav-item-background-hover: #e4eaf1;
+  --tab-text-color: #333e4c;
+  --tab-text-color-active: #0b1421;
+  --tag-color: #006cac;
+  --caret-color: #006cac;
+  --checkbox-color: #006cac;
+  --checkbox-color-hover: #006cac;
+  --checkbox-marker-color: #f8fafd;
+  --h1-color: #0b1421;
+  --h2-color: #044974;
+  --h3-color: #044974;
+  --h4-color: #0b1421;
+  --h5-color: #0b1421;
+  --h6-color: #0b1421;
+  --inline-code-color: #96502a;
+  --underline-color: #22684e;
+  --strikethrough-color: #515c68;
+  --graph-node: #006cac;
+  --graph-node-focused: #96502a;
+  --graph-node-tag: #22684e;
+  --graph-node-attachment: #6c4b99;
+  --graph-node-unresolved: #6e6044;
+  --graph-line: #a1b3c2;
+  --graph-text: #333e4c;
+  --interactive-accent-rgb: 0, 108, 172;
+  --text-selection: rgba(0, 108, 172, 0.18);
+  --text-highlight-bg: rgba(0, 108, 172, 0.14);
+  --background-modifier-active-hover: rgba(0, 108, 172, 0.12);
+  --tag-background: rgba(0, 108, 172, 0.08);
+}
+
+/* Protected emphasis selectors, from src/parts/emphasis.css. */
+/* Selected emphasis, not a syntax-highlighting palette. Native variables retain
+   user overrides; nested emphasis keeps its own weight/style and colour role. */
+body[data-ow-palette="sonwork"] .markdown-rendered :is(strong, b) { color: var(--bold-color); }
+body[data-ow-palette="sonwork"] .markdown-rendered :is(em, i) { color: var(--italic-color); }
+body[data-ow-palette="sonwork"] .markdown-rendered u,
+body[data-ow-palette="sonwork"] .markdown-source-view.mod-cm6 u,
+body[data-ow-palette="sonwork"] .markdown-source-view.mod-cm6 .cm-underline { color: var(--underline-color, var(--text-normal)); }
+body[data-ow-palette="sonwork"] .markdown-rendered :is(s, del),
+body[data-ow-palette="sonwork"] .markdown-source-view.mod-cm6 .cm-strikethrough { color: var(--strikethrough-color, var(--text-muted)); }
+body[data-ow-palette="sonwork"] .markdown-rendered :not(pre) > code,
+body[data-ow-palette="sonwork"] .markdown-source-view.mod-cm6 .cm-line:not(.HyperMD-codeblock) .cm-inline-code {
+  color: var(--inline-code-color, var(--code-normal));
+}
+/* Keep all heading descendants in their heading colour, including CM spans. */
+body[data-ow-palette="sonwork"] .markdown-rendered h1,
+body[data-ow-palette="sonwork"] .markdown-source-view.mod-cm6 .HyperMD-header-1 {
+  --bold-color: var(--h1-color);
+  --italic-color: var(--h1-color);
+  --inline-code-color: var(--h1-color);
+  --underline-color: var(--h1-color);
+  --strikethrough-color: var(--h1-color);
+}
+body[data-ow-palette="sonwork"] .markdown-rendered h2,
+body[data-ow-palette="sonwork"] .markdown-source-view.mod-cm6 .HyperMD-header-2 {
+  --bold-color: var(--h2-color);
+  --italic-color: var(--h2-color);
+  --inline-code-color: var(--h2-color);
+  --underline-color: var(--h2-color);
+  --strikethrough-color: var(--h2-color);
+}
+body[data-ow-palette="sonwork"] .markdown-rendered h3,
+body[data-ow-palette="sonwork"] .markdown-source-view.mod-cm6 .HyperMD-header-3 {
+  --bold-color: var(--h3-color);
+  --italic-color: var(--h3-color);
+  --inline-code-color: var(--h3-color);
+  --underline-color: var(--h3-color);
+  --strikethrough-color: var(--h3-color);
+}
+body[data-ow-palette="sonwork"] .markdown-rendered h4,
+body[data-ow-palette="sonwork"] .markdown-source-view.mod-cm6 .HyperMD-header-4 {
+  --bold-color: var(--h4-color);
+  --italic-color: var(--h4-color);
+  --inline-code-color: var(--h4-color);
+  --underline-color: var(--h4-color);
+  --strikethrough-color: var(--h4-color);
+}
+body[data-ow-palette="sonwork"] .markdown-rendered h5,
+body[data-ow-palette="sonwork"] .markdown-source-view.mod-cm6 .HyperMD-header-5 {
+  --bold-color: var(--h5-color);
+  --italic-color: var(--h5-color);
+  --inline-code-color: var(--h5-color);
+  --underline-color: var(--h5-color);
+  --strikethrough-color: var(--h5-color);
+}
+body[data-ow-palette="sonwork"] .markdown-rendered h6,
+body[data-ow-palette="sonwork"] .markdown-source-view.mod-cm6 .HyperMD-header-6 {
+  --bold-color: var(--h6-color);
+  --italic-color: var(--h6-color);
+  --inline-code-color: var(--h6-color);
+  --underline-color: var(--h6-color);
+  --strikethrough-color: var(--h6-color);
+}
+/* Links remain cyan even with nested formatting or combined CM classes. */
+body[data-ow-palette="sonwork"] .markdown-rendered a,
+body[data-ow-palette="sonwork"] .markdown-source-view.mod-cm6 a {
+  --bold-color: var(--link-color);
+  --italic-color: var(--link-color);
+  --inline-code-color: var(--link-color);
+  --underline-color: var(--link-color);
+  --strikethrough-color: var(--link-color);
+}
+body[data-ow-palette="sonwork"] .markdown-source-view.mod-cm6 :is(.cm-link, .cm-hmd-internal-link, .cm-url) {
+  --bold-color: var(--link-color);
+  --italic-color: var(--link-color);
+  --inline-code-color: var(--link-color);
+  --underline-color: var(--link-color);
+  --strikethrough-color: var(--link-color);
+}
+/* CM flattens either combined nesting order into one token. Rendered HTML
+   keeps nesting; the innermost role wins there. Keep native weight/style. */
+body[data-ow-palette="sonwork"] .markdown-source-view.mod-cm6 .cm-em.cm-strong { color: var(--italic-color); }
